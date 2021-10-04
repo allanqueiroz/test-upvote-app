@@ -1,9 +1,12 @@
 import Pages from "./pages/Page";
+import { TokenProvider } from "./contextAPI/tokenContext";
 
 function App() {
   return (
     <>
-      <Pages />
+      <TokenProvider>
+        <Pages />
+      </TokenProvider>
     </>
   );
 }
