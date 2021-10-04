@@ -1,5 +1,6 @@
 import React from "react";
 import { useToken } from "../../contextAPI/tokenContext";
+import { useData } from "../../contextAPI/dataContext";
 import "./posts.css";
 import api from "./../../services/api";
 import moment from "moment";
@@ -9,14 +10,14 @@ import { FcLike } from "react-icons/fc";
 
 function Posts() {
   const { token, setToken } = useToken();
-  const [data, setData] = React.useState([]);
+  const { data, setData } = useData();
 
   React.useEffect(() => {
     api
       .post(`/sign-in`, { username: "adfq", password: "421421" })
       .then((res) => setToken(res.data))
       .catch((error) => error.response);
-  }, [setToken]);
+  });
   React.useEffect(() => {
     if (token) {
       api
@@ -24,7 +25,7 @@ function Posts() {
         .then((response) => setData(response.data))
         .catch((error) => error.response);
     }
-  }, [token]);
+  });
 
   function handleLikeLove(id, type, liked, loved) {
     if (type === "like") {
