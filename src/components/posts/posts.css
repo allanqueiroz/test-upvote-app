@@ -17,8 +17,10 @@
 }
 .a-post button {
   padding: 5px;
-  margin-right: 5px;
   font-size: 16px;
+}
+.a-post span {
+  margin: 0 5px;
 }
 .a-post button:hover {
   cursor: pointer;
