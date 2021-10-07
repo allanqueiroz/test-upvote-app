@@ -3,7 +3,6 @@ import { useToken } from "../../contextAPI/tokenContext";
 import { useData } from "../../contextAPI/dataContext";
 import "./posts.css";
 import api from "./../../services/api";
-import moment from "moment";
 import { AiOutlineLike, AiFillLike } from "react-icons/ai";
 import { AiOutlineHeart } from "react-icons/ai";
 import { FcLike } from "react-icons/fc";
@@ -16,40 +15,39 @@ function Posts() {
     api
       .post(`/sign-in`, { username: "adfq", password: "421421" })
       .then((res) => setToken(res.data))
-      .catch((error) => error.response);
+      .catch((err) => err.response);
   });
   React.useEffect(() => {
     if (token) {
       api
         .get("/feeds", { headers: { Authorization: `Bearer ${token}` } })
-        .then((response) => setData(response.data))
-        .catch((error) => error.response);
+        .then((res) => setData(res.data))
+        .catch((err) => err.response);
     }
   });
 
-  function handleLikeLove(id, type, liked, loved) {
-    if (type === "like") {
-      if (!liked) {
-        postLikedLoved(id, type, true);
-      } else {
-        postLikedLoved(id, type, false);
-      }
-    } else {
-      if (!loved) {
-        postLikedLoved(id, type, true);
-      } else {
-        postLikedLoved(id, type, false);
-      }
-    }
-  }
-  function getFeeds() {
-    api
+  const getFeeds = () => {
+    return api
       .get("/feeds", { headers: { Authorization: `Bearer ${token}` } })
-      .then((response) => setData(response.data))
-      .catch((error) => error.response);
-  }
-  function postLikedLoved(id, type, bool) {
-    api
+      .then((res) => setData(res.data))
+      .catch((err) => err.response);
+  };
+  const handleLike = (id, liked) => {
+    if (!liked) {
+      postLikedLoved(id, "like", true);
+    } else {
+      postLikedLoved(id, "like", false);
+    }
+  };
+  const handleLove = (id, loved) => {
+    if (!loved) {
+      postLikedLoved(id, "love", true);
+    } else {
+      postLikedLoved(id, "love", false);
+    }
+  };
+  const postLikedLoved = (id, type, bool) => {
+    return api
       .post(
         "/reaction",
         {
@@ -59,8 +57,9 @@ function Posts() {
         { headers: { Authorization: `Bearer ${token}` } }
       )
       .then((res) => getFeeds())
-      .catch((err) => console.log(err));
-  }
+      .catch((err) => err.response);
+  };
+  const getDate = (d) => new Date(d).toLocaleDateString("pt-br");
 
   return (
     <div className="all-posts">
@@ -81,20 +80,10 @@ function Posts() {
               <div className="a-post" key={id}>
                 <p>{content}</p>
                 <p>
-                  {username} em{" "}
-                  {moment(createdAt.slice(0, 10)).format("DD/MM/YYYY")}
+                  {username} em {getDate(createdAt)}
                 </p>
                 <div style={{ display: "flex", alignItems: "center" }}>
-                  <button
-                    onClick={() =>
-                      handleLikeLove(
-                        id,
-                        "like",
-                        activeUserLikedIt,
-                        activeUserLovedIt
-                      )
-                    }
-                  >
+                  <button onClick={() => handleLike(id, activeUserLikedIt)}>
                     {activeUserLikedIt ? (
                       <AiFillLike size="1.2em" className="center" />
                     ) : (
@@ -102,16 +91,7 @@ function Posts() {
                     )}
                   </button>
                   <span>({likes})</span>
-                  <button
-                    onClick={() =>
-                      handleLikeLove(
-                        id,
-                        "love",
-                        activeUserLikedIt,
-                        activeUserLovedIt
-                      )
-                    }
-                  >
+                  <button onClick={() => handleLove(id, activeUserLovedIt)}>
                     {activeUserLovedIt ? (
                       <FcLike size="1.2em" className="center" />
                     ) : (
